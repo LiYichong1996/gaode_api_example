@@ -1,38 +1,838 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 .App {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+}
+
+/* 搜索容器 */
+.search-container {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 1000;
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* 出行方式选择器样式 */
+.route-mode-selector {
+  position: absolute;
+  top: 80px;
+  left: 20px;
+  z-index: 1000;
+  background: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.route-mode-selector span {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  margin-right: 5px;
+}
+
+.route-mode-selector button {
+  padding: 8px 12px;
+  border: 2px solid #ddd;
+  background: #f9f9f9;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #666;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.route-mode-selector button:hover {
+  border-color: #40a9ff;
+  background: #e6f7ff;
+  color: #1890ff;
+}
+
+.route-mode-selector button.active {
+  border-color: #1890ff;
+  background: #1890ff;
+  color: white;
+  font-weight: 500;
+}
+
+.route-mode-selector button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.search-input {
+  flex: 1;
+  padding: 10px 15px;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px 0 0 6px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.search-input:focus {
+  border-color: #1890ff;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+.search-button {
+  padding: 10px 20px;
+  background: #1890ff;
+  color: white;
+  border: none;
+  border-radius: 0 6px 6px 0;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+.search-button:hover {
+  background: #40a9ff;
+}
+
+/* 主容器 */
+.main-container {
+  display: flex;
+  flex: 1;
+  height: calc(100vh - 70px);
+}
+
+/* 地图容器 */
+.map-container {
+  flex: 1;
+  position: relative;
+}
+
+#mapContainer {
+  width: 100%;
+  height: 100%;
+}
+
+/* 侧边栏 */
+.sidebar {
+  width: 350px;
+  background: #fff;
+  border-left: 1px solid #e8e8e8;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* POI列表 */
+.poi-list {
+  flex: 1;
+  padding: 20px;
+}
+
+.poi-list h3 {
+  margin-bottom: 15px;
+  color: #262626;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.no-results {
   text-align: center;
+  color: #8c8c8c;
+  padding: 40px 20px;
+  font-size: 14px;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.poi-items {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
+.poi-item {
+  display: flex;
+  padding: 12px;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+  background: #fafafa;
+}
+
+.poi-item:hover {
+  border-color: #1890ff;
+  background: #f0f9ff;
+}
+
+.poi-item.selected {
+  border-color: #1890ff;
+  background: #e6f7ff;
+  box-shadow: 0 2px 8px rgba(24, 144, 255, 0.2);
+}
+
+.poi-number {
+  width: 24px;
+  height: 24px;
+  background: #1890ff;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.poi-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.poi-info h4 {
+  font-size: 14px;
+  color: #262626;
+  margin-bottom: 4px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.poi-info p {
+  font-size: 12px;
+  color: #8c8c8c;
+  margin-bottom: 4px;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.poi-type {
+  font-size: 11px;
+  color: #1890ff;
+  background: #f0f9ff;
+  padding: 2px 6px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+/* POI详情卡片 */
+.poi-card-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.poi-card {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  max-width: 400px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.2);
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.poi-card-header {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.poi-card-header h3 {
+  color: #262626;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #8c8c8c;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.close-button:hover {
+  background: #f5f5f5;
+  color: #262626;
+}
+
+.poi-card-content {
+  margin-bottom: 20px;
+}
+
+.poi-card-content p {
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: #262626;
+  line-height: 1.5;
+}
+
+.poi-card-content strong {
+  color: #262626;
+  margin-right: 8px;
+}
+
+.poi-card-actions {
+  display: flex;
+  justify-content: center;
+}
+
+.navigation-button {
+  background: #52c41a;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.navigation-button:hover {
+  background: #73d13d;
+}
+
+/* 路线信息 */
+.route-info {
+  border-top: 1px solid #e8e8e8;
+  padding: 20px;
+  background: #fafafa;
+}
+
+.route-info h3 {
+  margin-bottom: 15px;
+  color: #262626;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.route-details {
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  border: 1px solid #e8e8e8;
+}
+
+.route-details p {
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #262626;
+}
+
+.route-details strong {
+  color: #262626;
+  margin-right: 8px;
+}
+
+.route-panel {
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e8e8e8;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .main-container {
+    flex-direction: column;
+  }
+  
+  .sidebar {
+    width: 100%;
+    height: 40vh;
+    border-left: none;
+    border-top: 1px solid #e8e8e8;
+  }
+  
+  .map-container {
+    height: 60vh;
+  }
+  
+  .poi-card {
+    width: 95%;
+    padding: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .search-container {
+    padding: 10px 15px;
+  }
+  
+  .search-input {
+    font-size: 16px; /* 防止iOS缩放 */
+  }
+  
+  .poi-list {
+    padding: 15px;
+  }
+}
+
+/* 高德地图导航按钮样式 */
+.navigation-actions {
+  margin: 15px 0;
+  padding: 10px 0;
+  border-top: 1px solid #f0f0f0;
+}
+
+.amap-navigation-btn {
+  background: linear-gradient(135deg, #00B578, #00A870) !important;
+  color: white !important;
+  border: none !important;
+  padding: 12px 20px !important;
+  border-radius: 8px !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  margin: 10px 0 !important;
+  width: 100% !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 2px 8px rgba(0, 181, 120, 0.3) !important;
+}
+
+.amap-navigation-btn:hover {
+  background: linear-gradient(135deg, #00A870, #009965) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 12px rgba(0, 181, 120, 0.4) !important;
+}
+
+.amap-navigation-btn:active {
+  transform: translateY(0) !important;
+  box-shadow: 0 2px 4px rgba(0, 181, 120, 0.3) !important;
+}
+
+/* 位置搜索弹窗样式 - Location search popup styles */
+.location-search-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+  animation: slideIn 0.3s ease-out;
+}
+
+.location-search-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid #f0f0f0;
+  background: #fafafa;
+  border-radius: 12px 12px 0 0;
+}
+
+.location-search-header h3 {
+  margin: 0;
+  color: #1890ff;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.location-search-content {
+  padding: 24px;
+}
+
+.location-info {
+  background: #f6f8fa;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border-left: 4px solid #1890ff;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.location-search-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.location-search-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #d9d9d9;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  outline: none;
+}
+
+.location-search-input:focus {
+  border-color: #1890ff;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+.location-search-input::placeholder {
+  color: #bfbfbf;
+  font-size: 13px;
+}
+
+.location-search-button {
+  background: linear-gradient(135deg, #1890ff, #40a9ff);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.location-search-button:hover {
+  background: linear-gradient(135deg, #40a9ff, #69c0ff);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(24, 144, 255, 0.3);
+}
+
+.location-search-button:active {
+  transform: translateY(0);
+}
+
+.search-tip {
+  background: #fff7e6;
+  border: 1px solid #ffd591;
+  border-radius: 6px;
+  padding: 12px;
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #d48806;
+}
+
+/* 响应式设计 - Responsive design */
+@media (max-width: 768px) {
+  .location-search-card {
+    width: 95%;
+    margin: 10px;
+  }
+  
+  .location-search-header {
+    padding: 16px 20px 12px;
+  }
+  
+  .location-search-header h3 {
+    font-size: 16px;
+  }
+  
+  .location-search-content {
+    padding: 20px;
+  }
+  
+  .location-search-input-group {
+    gap: 10px;
+  }
+}
+
+/* 路线起点信息样式 - Route origin info styles */
+.route-points {
+  background: #f6f8fa;
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  border-left: 3px solid #1890ff;
+}
+
+.origin-source {
+  display: inline-block;
+  background: linear-gradient(135deg, #52c41a, #73d13d);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+  margin-left: 8px;
+  white-space: nowrap;
+}
+
+/* 位置信息卡片样式 - Location info card styles */
+.location-info-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  width: 90%;
+  max-width: 600px;
+  max-height: 85vh;
+  overflow-y: auto;
+  position: relative;
+  animation: slideIn 0.3s ease-out;
+}
+
+.location-info-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid #f0f0f0;
+  background: linear-gradient(135deg, #1890ff, #40a9ff);
+  color: white;
+  border-radius: 12px 12px 0 0;
+}
+
+.location-info-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.location-info-header .close-button {
+  color: white;
+  font-size: 24px;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.location-info-header .close-button:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.location-info-content {
+  padding: 24px;
+}
+
+.address-section, .coordinate-section, .nearby-section, .road-section {
+  margin-bottom: 24px;
+  padding: 16px;
+  background: #fafbfc;
+  border-radius: 8px;
+  border-left: 4px solid #1890ff;
+}
+
+.address-section h4, .coordinate-section h4, .nearby-section h4, .road-section h4 {
+  margin: 0 0 12px 0;
+  color: #1890ff;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.formatted-address {
+  font-size: 15px;
+  font-weight: 600;
+  color: #262626;
+  margin-bottom: 16px;
+  padding: 12px;
+  background: white;
+  border-radius: 6px;
+  border: 1px solid #d9d9d9;
+}
+
+.address-details, .coordinate-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.address-row, .coordinate-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: white;
+  border-radius: 4px;
+  border: 1px solid #f0f0f0;
+}
+
+.address-row .label, .coordinate-row .label {
+  font-weight: 500;
+  color: #666;
+  font-size: 13px;
+}
+
+.address-row .value, .coordinate-row .value {
+  font-weight: 600;
+  color: #262626;
+  font-size: 13px;
+}
+
+.nearby-pois, .nearby-roads {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.nearby-poi-item, .road-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  background: white;
+  border-radius: 6px;
+  border: 1px solid #f0f0f0;
+  transition: all 0.3s ease;
+}
+
+.nearby-poi-item:hover, .road-item:hover {
+  border-color: #1890ff;
+  box-shadow: 0 2px 8px rgba(24, 144, 255, 0.1);
+}
+
+.poi-name, .road-name {
+  font-weight: 500;
+  color: #262626;
+  font-size: 14px;
+}
+
+.poi-distance, .road-distance {
+  font-size: 12px;
+  color: #999;
+  background: #f0f0f0;
+  padding: 2px 6px;
+  border-radius: 10px;
+}
+
+.location-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.search-here-button, .copy-coords-button {
+  flex: 1;
+  min-width: 140px;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.search-here-button {
+  background: linear-gradient(135deg, #52c41a, #73d13d);
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.search-here-button:hover {
+  background: linear-gradient(135deg, #73d13d, #95de64);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(82, 196, 26, 0.3);
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+.copy-coords-button {
+  background: linear-gradient(135deg, #faad14, #ffc53d);
+  color: white;
+}
+
+.copy-coords-button:hover {
+  background: linear-gradient(135deg, #ffc53d, #ffd666);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(250, 173, 20, 0.3);
+}
+
+/* 响应式设计 - Responsive design for location info */
+@media (max-width: 768px) {
+  .location-info-card {
+    width: 95%;
+    margin: 10px;
+    max-height: 90vh;
   }
-  to {
-    transform: rotate(360deg);
+  
+  .location-info-header {
+    padding: 16px 20px 12px;
+  }
+  
+  .location-info-header h3 {
+    font-size: 16px;
+  }
+  
+  .location-info-content {
+    padding: 20px;
+  }
+  
+  .location-actions {
+    flex-direction: column;
+  }
+  
+  .search-here-button, .copy-coords-button {
+    min-width: auto;
   }
 }
